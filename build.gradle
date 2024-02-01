@@ -17,3 +17,7 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+git {
+    implementation 'https://github.com/CalvinTheRed/RPGL.git', { tag 'v0.22.0-beta' }
+}

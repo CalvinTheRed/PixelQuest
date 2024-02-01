@@ -1,2 +1,5 @@
-rootProject.name = 'MightAndMagic'
+plugins {
+    id 'com.alexvasilkov.git-dependencies' version '2.0.4'
+}
 
+rootProject.name = 'MightAndMagic'
