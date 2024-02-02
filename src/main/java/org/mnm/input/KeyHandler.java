@@ -7,9 +7,9 @@ import java.util.List;
 
 public class KeyHandler implements KeyListener {
 
-    public boolean wDown, aDown, sDown, dDown;
+    public boolean wDown, aDown, sDown, dDown, equalsDown, minusDown;
 
-    private List<Integer> lockedKeys;
+    private final List<Integer> lockedKeys;
 
     public KeyHandler() {
         this.lockedKeys = new ArrayList<>();
@@ -37,6 +37,14 @@ public class KeyHandler implements KeyListener {
                 }
                 case KeyEvent.VK_D -> {
                     dDown = true;
+                    lockKey(keyCode);
+                }
+                case KeyEvent.VK_EQUALS -> {
+                    equalsDown = true;
+                    lockKey(keyCode);
+                }
+                case KeyEvent.VK_MINUS -> {
+                    minusDown = true;
                     lockKey(keyCode);
                 }
             }

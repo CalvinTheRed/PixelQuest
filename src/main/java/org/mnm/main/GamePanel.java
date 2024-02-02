@@ -12,6 +12,8 @@ import java.io.IOException;
 
 public class GamePanel extends JPanel implements Runnable {
 
+    final int FPS = 60;
+
     final int TILE_SIZE = 12;
     final int SCALE = 4;
 
@@ -54,9 +56,16 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
+        long drawInterval = 1000000000 / FPS;
+        long lastTime = System.nanoTime();
+        long currentTime;
         while (gameThread != null) {
-            update();
-            repaint();
+            currentTime = System.nanoTime();
+            if (currentTime > lastTime + drawInterval) {
+                lastTime = currentTime;
+                update();
+                repaint();
+            }
         }
     }
 
@@ -81,6 +90,14 @@ public class GamePanel extends JPanel implements Runnable {
             backgroundX--;
             facing = SpriteUtils.FACING_RIGHT;
         }
+        if (keyHandler.equalsDown) {
+            keyHandler.equalsDown = false;
+            sizeModifier++;
+        }
+        if (keyHandler.minusDown) {
+            keyHandler.minusDown = false;
+            sizeModifier--;
+        }
     }
 
     @Override
@@ -98,10 +115,16 @@ public class GamePanel extends JPanel implements Runnable {
 
             BufferedImage player = ImageIO.read(new File("resources/textures/player.png"));
             g2.drawImage(player,
-                    playerX * TILE_SIZE * SCALE,
-                    (playerY * TILE_SIZE - (player.getHeight() / 4 - TILE_SIZE)) * SCALE + SPRITE_OFFSET,
-                    (playerX + 1) * TILE_SIZE * SCALE,
-                    (playerY + 1) * TILE_SIZE * SCALE + SPRITE_OFFSET,
+                    playerX * TILE_SIZE * SCALE
+                            - (TILE_SIZE * SCALE * (sizeModifier - 1) / 2),
+                    (playerY * TILE_SIZE - (player.getHeight() / 4 - TILE_SIZE)) * SCALE
+                            - (TILE_SIZE * SCALE * (sizeModifier - 1) / 2)
+                            + SPRITE_OFFSET,
+                    (playerX + 1) * TILE_SIZE * SCALE
+                            + (TILE_SIZE * SCALE * (sizeModifier - 1) / 2),
+                    (playerY + 1) * TILE_SIZE * SCALE
+                            + (TILE_SIZE * SCALE * (sizeModifier - 1) / 2)
+                            + SPRITE_OFFSET,
                     (player.getWidth() / 4) * stride,
                     (player.getHeight() / 4) * facing,
                     (player.getWidth() / 4) * (stride + 1),
