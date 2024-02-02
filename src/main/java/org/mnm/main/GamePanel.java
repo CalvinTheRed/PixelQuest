@@ -26,7 +26,13 @@ public class GamePanel extends JPanel implements Runnable {
 
     private Thread gameThread;
     private String backgroundTexture;
-    private int playerX, playerY, facing, stride, sizeModifier, backgroundX, backgroundY;
+    private final int centerX, centerY;
+    private int stride;
+
+    Sprite player = new Sprite(
+            "resources/textures/player.png",
+            25, 18, SpriteUtils.FACING_DOWN, 1
+    );
 
     public GamePanel(String backgroundTexture) {
         this.setPreferredSize(new Dimension(
@@ -39,14 +45,8 @@ public class GamePanel extends JPanel implements Runnable {
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
 
-        playerX = COLS / 2;
-        playerY = ROWS / 2;
-        facing = SpriteUtils.FACING_RIGHT;
-        stride = 0;
-        sizeModifier = 1;
-
-        backgroundX = -15;
-        backgroundY = -9;
+        centerX = COLS / 2;
+        centerY = ROWS / 2;
     }
 
     public void startGameThread() {
@@ -72,31 +72,31 @@ public class GamePanel extends JPanel implements Runnable {
     public void update() {
         if (keyHandler.wDown) {
             keyHandler.wDown = false;
-            backgroundY++;
-            facing = SpriteUtils.FACING_UP;
+            player.setY(player.getY() - 1);
+            player.setFacing(SpriteUtils.FACING_UP);
         }
         if (keyHandler.aDown) {
             keyHandler.aDown = false;
-            backgroundX++;
-            facing = SpriteUtils.FACING_LEFT;
+            player.setX(player.getX() - 1);
+            player.setFacing(SpriteUtils.FACING_LEFT);
         }
         if (keyHandler.sDown) {
             keyHandler.sDown = false;
-            backgroundY--;
-            facing = SpriteUtils.FACING_DOWN;
+            player.setY(player.getY() + 1);
+            player.setFacing(SpriteUtils.FACING_DOWN);
         }
         if (keyHandler.dDown) {
             keyHandler.dDown = false;
-            backgroundX--;
-            facing = SpriteUtils.FACING_RIGHT;
+            player.setX(player.getX() + 1);
+            player.setFacing(SpriteUtils.FACING_RIGHT);
         }
         if (keyHandler.equalsDown) {
             keyHandler.equalsDown = false;
-            sizeModifier++;
+            player.setSize(Math.min(player.getSize() + 1, 4));
         }
         if (keyHandler.minusDown) {
             keyHandler.minusDown = false;
-            sizeModifier--;
+            player.setSize(Math.max(player.getSize() - 1, 1));
         }
     }
 
@@ -108,29 +108,15 @@ public class GamePanel extends JPanel implements Runnable {
         try {
             BufferedImage background = ImageIO.read(new File(this.backgroundTexture));
             g2.drawImage(background,
-                    TILE_SIZE * SCALE * ((2 * backgroundX) - sizeModifier + 1) / 2,
-                    TILE_SIZE * SCALE * ((2 * backgroundY) - sizeModifier + 1) / 2,
+                    TILE_SIZE * SCALE * ((2 * (-player.getX() + centerX)) - player.getSize() + 1) / 2,
+                    TILE_SIZE * SCALE * ((2 * (-player.getY() + centerY)) - player.getSize() + 1) / 2,
+                    background.getWidth() * SCALE,
+                    background.getHeight() * SCALE,
                     null
             );
 
-            BufferedImage player = ImageIO.read(new File("resources/textures/player.png"));
-            g2.drawImage(player,
-                    playerX * TILE_SIZE * SCALE
-                            - (TILE_SIZE * SCALE * (sizeModifier - 1) / 2),
-                    (playerY * TILE_SIZE - (player.getHeight() / 4 - TILE_SIZE)) * SCALE
-                            - (TILE_SIZE * SCALE * (sizeModifier - 1) / 2)
-                            + SPRITE_OFFSET,
-                    (playerX + 1) * TILE_SIZE * SCALE
-                            + (TILE_SIZE * SCALE * (sizeModifier - 1) / 2),
-                    (playerY + 1) * TILE_SIZE * SCALE
-                            + (TILE_SIZE * SCALE * (sizeModifier - 1) / 2)
-                            + SPRITE_OFFSET,
-                    (player.getWidth() / 4) * stride,
-                    (player.getHeight() / 4) * facing,
-                    (player.getWidth() / 4) * (stride + 1),
-                    (player.getHeight() / 4) * (facing + 1),
-                    null
-            );
+            this.renderSprite(g2, player, player);
+
         } catch (IOException e) {
             g2.dispose();
             throw new RuntimeException(e);
@@ -141,6 +127,30 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void setBackgroundTexture(String backgroundTexture) {
         this.backgroundTexture = backgroundTexture;
+    }
+
+    private void renderSprite(Graphics2D g2, Sprite sprite, Sprite focusSprite) throws IOException {
+        BufferedImage playerTexture = ImageIO.read(new File(sprite.getTexture()));
+
+        // TODO render non-focus sprites relative to the position of the focus sprite
+
+        g2.drawImage(playerTexture,
+                centerX * TILE_SIZE * SCALE
+                        - (TILE_SIZE * SCALE * (sprite.getSize() - 1) / 2),
+                (centerY * TILE_SIZE - (playerTexture.getHeight() / 4 - TILE_SIZE)) * SCALE
+                        - (TILE_SIZE * SCALE * (sprite.getSize() - 1) / 2)
+                        + SPRITE_OFFSET,
+                (centerX + 1) * TILE_SIZE * SCALE
+                        + (TILE_SIZE * SCALE * (sprite.getSize() - 1) / 2),
+                (centerY + 1) * TILE_SIZE * SCALE
+                        + (TILE_SIZE * SCALE * (sprite.getSize() - 1) / 2)
+                        + SPRITE_OFFSET,
+                (playerTexture.getWidth() / 4) * stride,
+                (playerTexture.getHeight() / 4) * sprite.getFacing(),
+                (playerTexture.getWidth() / 4) * (stride + 1),
+                (playerTexture.getHeight() / 4) * (sprite.getFacing() + 1),
+                null
+        );
     }
 
 }
