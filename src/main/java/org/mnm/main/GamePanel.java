@@ -1,5 +1,7 @@
 package org.mnm.main;
 
+import org.mnm.core.Map;
+import org.mnm.core.MapLoader;
 import org.mnm.input.KeyHandler;
 import org.mnm.util.SpriteUtils;
 
@@ -30,41 +32,43 @@ public class GamePanel extends JPanel implements Runnable {
     private final KeyHandler keyHandler = new KeyHandler();
 
     private Thread gameThread;
-    private String backgroundTexture;
     private final int centerX, centerY;
     private int cameraX, cameraY;
     private int stride = 0;
 
     private final List<Sprite> sprites;
 
+    private Map map;
+
     Sprite focusSprite = new Sprite(
-            "resources/textures/player.png",
-            15, 15, SpriteUtils.FACING_DOWN, 1
+            "resources/textures/sprites/player.png",
+            25, 18, SpriteUtils.FACING_DOWN, 1
     );
 
-    public GamePanel(String backgroundTexture) {
+    public GamePanel(String initialMapDir) throws IOException {
         this.setPreferredSize(new Dimension(
                 TILE_SIZE * SCALE * COLS,
                 TILE_SIZE * SCALE * ROWS
         ));
         this.setBackground(Color.BLACK);
         this.setDoubleBuffered(true);
-        this.setBackgroundTexture(backgroundTexture);
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
 
         sprites = new ArrayList<>();
         sprites.add(focusSprite);
         sprites.add(new Sprite(
-                "resources/textures/player.png",
-                23, 17, SpriteUtils.FACING_DOWN, 1
+                "resources/textures/sprites/player.png",
+                43, 26, SpriteUtils.FACING_DOWN, 1
         ));
+
+        map = MapLoader.getMap(initialMapDir);
 
         centerX = COLS / 2;
         centerY = ROWS / 2;
 
-        cameraX = 15;
-        cameraY = 15;
+        cameraX = focusSprite.getX() - centerX;
+        cameraY = focusSprite.getY() - centerY;
     }
 
     public void startGameThread() {
@@ -136,7 +140,7 @@ public class GamePanel extends JPanel implements Runnable {
                 return false;
             }
         }
-        return true;
+        return map.canMoveToTile(x, y);
     }
 
     @Override
@@ -158,10 +162,10 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void renderBackgroundLayer(Graphics2D g2) throws IOException {
-        BufferedImage texture = ImageIO.read(new File(this.backgroundTexture));
+        BufferedImage texture = map.getBackground();
         g2.drawImage(texture,
-                TILE_SIZE * SCALE * ((2 * (-cameraX + centerX)) - focusSprite.getSize() + 1) / 2 - TEXTURE_OFFSET_X,
-                TILE_SIZE * SCALE * ((2 * (-cameraY + centerY)) - focusSprite.getSize() + 1) / 2 - TEXTURE_OFFSET_Y,
+                TILE_SIZE * SCALE * (centerX - cameraX) - TEXTURE_OFFSET_X,
+                TILE_SIZE * SCALE * (centerY - cameraY) - TEXTURE_OFFSET_Y,
                 texture.getWidth() * SCALE,
                 texture.getHeight() * SCALE,
                 null
@@ -183,30 +187,25 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void renderForegroundLayer(Graphics2D g2) {
-
-    }
-
-    public void setBackgroundTexture(String backgroundTexture) {
-        this.backgroundTexture = backgroundTexture;
+        BufferedImage texture = map.getForeground();
+        g2.drawImage(texture,
+                TILE_SIZE * SCALE * (centerX - cameraX) - TEXTURE_OFFSET_X,
+                TILE_SIZE * SCALE * (centerY - cameraY) - TEXTURE_OFFSET_Y,
+                texture.getWidth() * SCALE,
+                texture.getHeight() * SCALE,
+                null
+        );
     }
 
     private void renderSprite(Graphics2D g2, Sprite sprite) throws IOException {
         BufferedImage texture = ImageIO.read(new File(sprite.getTexture()));
 
         g2.drawImage(texture,
-                (sprite.getX() - cameraX) * TILE_SIZE * SCALE
-                        - (TILE_SIZE * SCALE * (sprite.getSize() - 1) / 2)
-                        + TEXTURE_OFFSET_X,
+                (sprite.getX() - cameraX) * TILE_SIZE * SCALE,
                 ((sprite.getY() - cameraY) * TILE_SIZE - (texture.getHeight() / 4 - TILE_SIZE)) * SCALE
-                        - (TILE_SIZE * SCALE * (sprite.getSize() - 1) / 2)
-                        + TEXTURE_OFFSET_Y
                         + SPRITE_OFFSET_Y,
-                (sprite.getX() - cameraX + 1) * TILE_SIZE * SCALE
-                        + (TILE_SIZE * SCALE * (sprite.getSize() - 1) / 2)
-                        + TEXTURE_OFFSET_X,
+                (sprite.getX() - cameraX + 1) * TILE_SIZE * SCALE,
                 (sprite.getY() - cameraY + 1) * TILE_SIZE * SCALE
-                        + (TILE_SIZE * SCALE * (sprite.getSize() - 1) / 2)
-                        + TEXTURE_OFFSET_Y
                         + SPRITE_OFFSET_Y,
                 (texture.getWidth() / 4) * stride,
                 (texture.getHeight() / 4) * sprite.getFacing(),

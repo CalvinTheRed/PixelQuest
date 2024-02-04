@@ -11,6 +11,8 @@ public class Sprite {
         this.y = y;
         this.facing = facing;
         this.size = size;
+
+        System.out.println("Spawning new Sprite at (" + x + "," + y + ")");
     }
 
     public String getTexture() {
@@ -39,14 +41,6 @@ public class Sprite {
 
     public void setFacing(int facing) {
         this.facing = facing;
-    }
-
-    public int getSize() {
-        return this.size;
-    }
-
-    public void setSize(int size) {
-        this.size = size;
     }
 
 }
