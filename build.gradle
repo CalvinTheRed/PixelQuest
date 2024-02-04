@@ -19,5 +19,5 @@ test {
 }
 
 git {
-    implementation 'https://github.com/CalvinTheRed/RPGL.git', { tag 'v0.22.0-beta' }
+    implementation 'https://github.com/CalvinTheRed/RPGL.git', { tag 'v0.23.0-beta' }
 }
