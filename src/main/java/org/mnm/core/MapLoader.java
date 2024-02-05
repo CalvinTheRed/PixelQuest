@@ -30,7 +30,7 @@ public final class MapLoader {
                     .setName(objectData.getString("name"));
         }
 
-        return new GameMap(background, foreground, mapData.getJsonArray("collisions"), mapData.getInteger("tile_size"));
+        return new GameMap(background, foreground, mapData.getJsonArray("collisions"));
     }
 
 }
