@@ -1,7 +1,7 @@
-package org.mnm.core;
+package org.pixelquest.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.mnm.util.SpriteUtils;
+import org.pixelquest.util.SpriteUtils;
 import org.rpgl.json.JsonArray;
 import org.rpgl.json.JsonObject;
 

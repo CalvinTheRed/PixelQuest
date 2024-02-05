@@ -1,4 +1,4 @@
-package org.mnm.core;
+package org.pixelquest.core;
 
 import org.rpgl.json.JsonArray;
 

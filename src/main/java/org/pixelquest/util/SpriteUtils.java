@@ -1,4 +1,4 @@
-package org.mnm.util;
+package org.pixelquest.util;
 
 import org.rpgl.core.RPGLFactory;
 import org.rpgl.core.RPGLObject;

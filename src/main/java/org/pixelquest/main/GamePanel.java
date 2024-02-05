@@ -1,9 +1,9 @@
-package org.mnm.main;
+package org.pixelquest.main;
 
-import org.mnm.core.GameMap;
-import org.mnm.core.MapLoader;
-import org.mnm.input.DiscreteKeyHandler;
-import org.mnm.util.SpriteUtils;
+import org.pixelquest.core.GameMap;
+import org.pixelquest.core.MapLoader;
+import org.pixelquest.input.DiscreteKeyHandler;
+import org.pixelquest.util.SpriteUtils;
 import org.rpgl.core.RPGLObject;
 import org.rpgl.uuidtable.UUIDTable;
 

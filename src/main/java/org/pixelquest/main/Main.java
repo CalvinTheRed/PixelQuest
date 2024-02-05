@@ -1,4 +1,4 @@
-package org.mnm.main;
+package org.pixelquest.main;
 
 import org.rpgl.core.RPGLCore;
 import org.rpgl.datapack.DatapackLoader;
