@@ -26,7 +26,8 @@ public final class MapLoader {
         for (int i = 0; i < objects.size(); i++) {
             JsonObject objectData = objects.getJsonObject(i);
             JsonArray pos = objectData.getJsonArray("pos");
-            SpriteUtils.newObject(objectData.getString("id"), pos.getInteger(0), pos.getInteger(1), objectData.getInteger("rot"));
+            SpriteUtils.newObject(objectData.getString("id"), pos.getInteger(0), pos.getInteger(1), objectData.getInteger("rot"))
+                    .setName(objectData.getString("name"));
         }
 
         return new GameMap(background, foreground, mapData.getJsonArray("collisions"), mapData.getInteger("tile_size"));

@@ -45,14 +45,22 @@
   "foreground": "resources/textures/maps/test_island/foreground.png",
   "objects": [
     {
-      "id": "std:npc/test_island/mr_smith",
+      "id": "std:humanoid/commoner",
+      "name": "Mrs. Gardner",
       "pos": [ 43, 26 ],
       "rot": 0
     },
     {
-      "id": "std:npc/test_island/mrs_gardner",
+      "id": "std:humanoid/commoner",
+      "name": "Mr. Fisher",
       "pos": [ 35, 14 ],
       "rot": 1
+    },
+    {
+      "id": "std:humanoid/commoner",
+      "name": "Billy the Kid",
+      "pos": [ 16, 9 ],
+      "rot": 0
     }
   ],
   "tile_size": 12
