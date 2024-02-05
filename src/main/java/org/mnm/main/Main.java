@@ -1,8 +1,10 @@
 package org.mnm.main;
 
 import org.rpgl.core.RPGLCore;
+import org.rpgl.datapack.DatapackLoader;
 
 import javax.swing.*;
+import java.io.File;
 import java.io.IOException;
 
 public class Main {
@@ -14,6 +16,7 @@ public class Main {
 
     private static void setupRPGL() {
         RPGLCore.initialize();
+        DatapackLoader.loadDatapacks(new File("datapacks"));
     }
 
     private static void setupGraphics() {

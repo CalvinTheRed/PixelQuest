@@ -23,7 +23,6 @@ public class Map {
     }
 
     public boolean canMoveToTile(int x, int y) {
-        System.out.println("Checking tile at (" + x + "," + y + ")");
         return !collisions[y][x];
     }
 

@@ -4,6 +4,9 @@ import org.mnm.core.Map;
 import org.mnm.core.MapLoader;
 import org.mnm.input.KeyHandler;
 import org.mnm.util.SpriteUtils;
+import org.rpgl.core.RPGLFactory;
+import org.rpgl.core.RPGLObject;
+import org.rpgl.uuidtable.UUIDTable;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -11,9 +14,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -36,14 +37,9 @@ public class GamePanel extends JPanel implements Runnable {
     private int cameraX, cameraY;
     private int stride = 0;
 
-    private final List<Sprite> sprites;
-
     private Map map;
 
-    Sprite focusSprite = new Sprite(
-            "resources/textures/sprites/player.png",
-            25, 18, SpriteUtils.FACING_DOWN, 1
-    );
+    RPGLObject focusObject = newObject("std:humanoid/commoner", 25, 18);
 
     public GamePanel(String initialMapDir) throws IOException {
         this.setPreferredSize(new Dimension(
@@ -55,20 +51,15 @@ public class GamePanel extends JPanel implements Runnable {
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
 
-        sprites = new ArrayList<>();
-        sprites.add(focusSprite);
-        sprites.add(new Sprite(
-                "resources/textures/sprites/player.png",
-                43, 26, SpriteUtils.FACING_DOWN, 1
-        ));
+        newObject("std:humanoid/commoner", 43, 26);
 
         map = MapLoader.getMap(initialMapDir);
 
         centerX = COLS / 2;
         centerY = ROWS / 2;
 
-        cameraX = focusSprite.getX() - centerX;
-        cameraY = focusSprite.getY() - centerY;
+        cameraX = SpriteUtils.getX(focusObject) - centerX;
+        cameraY = SpriteUtils.getY(focusObject) - centerY;
     }
 
     public void startGameThread() {
@@ -93,54 +84,48 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void update() {
         if (keyHandler.wDown) {
-            focusSprite.setFacing(SpriteUtils.FACING_UP);
+            SpriteUtils.setRotation(focusObject, SpriteUtils.FACING_UP);
             keyHandler.wDown = false;
-            if (canEnterSpace(focusSprite.getX(), focusSprite.getY() - 1)) {
-                focusSprite.setY(focusSprite.getY() - 1);
+            if (canEnterSpace(SpriteUtils.getX(focusObject), SpriteUtils.getY(focusObject) - 1)) {
+                SpriteUtils.setY(focusObject, SpriteUtils.getY(focusObject) - 1);
                 cameraY--;
             }
         }
         if (keyHandler.aDown) {
-            focusSprite.setFacing(SpriteUtils.FACING_LEFT);
+            SpriteUtils.setRotation(focusObject, SpriteUtils.FACING_LEFT);
             keyHandler.aDown = false;
-            if (canEnterSpace(focusSprite.getX() - 1, focusSprite.getY())) {
-                focusSprite.setX(focusSprite.getX() - 1);
+            if (canEnterSpace(SpriteUtils.getX(focusObject) - 1, SpriteUtils.getY(focusObject))) {
+                SpriteUtils.setX(focusObject, SpriteUtils.getX(focusObject) - 1);
                 cameraX--;
             }
         }
         if (keyHandler.sDown) {
-            focusSprite.setFacing(SpriteUtils.FACING_DOWN);
+            SpriteUtils.setRotation(focusObject, SpriteUtils.FACING_DOWN);
             keyHandler.sDown = false;
-            if (canEnterSpace(focusSprite.getX(), focusSprite.getY() + 1)) {
-                focusSprite.setY(focusSprite.getY() + 1);
+            if (canEnterSpace(SpriteUtils.getX(focusObject), SpriteUtils.getY(focusObject) + 1)) {
+                SpriteUtils.setY(focusObject, SpriteUtils.getY(focusObject) + 1);
                 cameraY++;
             }
         }
         if (keyHandler.dDown) {
-            focusSprite.setFacing(SpriteUtils.FACING_RIGHT);
+            SpriteUtils.setRotation(focusObject, SpriteUtils.FACING_RIGHT);
             keyHandler.dDown = false;
-            if (canEnterSpace(focusSprite.getX() + 1, focusSprite.getY())) {
-                focusSprite.setX(focusSprite.getX() + 1);
+            if (canEnterSpace(SpriteUtils.getX(focusObject) + 1, SpriteUtils.getY(focusObject))) {
+                SpriteUtils.setX(focusObject, SpriteUtils.getX(focusObject) + 1);
                 cameraX++;
             }
         }
-//        if (keyHandler.equalsDown) {
-//            keyHandler.equalsDown = false;
-//            focusSprite.setSize(Math.min(focusSprite.getSize() + 1, 4));
-//        }
-//        if (keyHandler.minusDown) {
-//            keyHandler.minusDown = false;
-//            focusSprite.setSize(Math.max(focusSprite.getSize() - 1, 1));
-//        } // TODO size-ups don't quite work right for multiple sprites. Issue for later.
     }
 
-    public boolean canEnterSpace(int x, int y) {
-        for (Sprite sprite : sprites) {
-            if (sprite.getX() == x && sprite.getY() == y) {
+    public boolean canEnterSpace(double x, double y) {
+        double epsilon = 0.000001d;
+        for (RPGLObject object : UUIDTable.getObjects()) {
+            if (Math.abs(Double.compare(object.getPosition().getDouble(0), x)) < epsilon
+                    && Math.abs(Double.compare(object.getPosition().getDouble(1), y)) < epsilon) {
                 return false;
             }
         }
-        return map.canMoveToTile(x, y);
+        return map.canMoveToTile((int) Math.round(x), (int) Math.round(y));
     }
 
     @Override
@@ -151,7 +136,7 @@ public class GamePanel extends JPanel implements Runnable {
         try {
             renderBackgroundLayer(g2);
             renderDetailLayer(g2);
-            renderSpriteLayer(g2);
+            renderObjectLayer(g2);
             renderForegroundLayer(g2);
         } catch (IOException e) {
             g2.dispose();
@@ -176,10 +161,10 @@ public class GamePanel extends JPanel implements Runnable {
 
     }
 
-    private void renderSpriteLayer(Graphics2D g2) {
-        sprites.stream().sorted(Comparator.comparing(Sprite::getY)).forEach(sprite -> {
+    private void renderObjectLayer(Graphics2D g2) {
+        UUIDTable.getObjects().stream().sorted(Comparator.comparingInt(SpriteUtils::getY)).forEach(object -> {
             try {
-                this.renderSprite(g2, sprite);
+                this.renderObject(g2, object);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -197,22 +182,26 @@ public class GamePanel extends JPanel implements Runnable {
         );
     }
 
-    private void renderSprite(Graphics2D g2, Sprite sprite) throws IOException {
-        BufferedImage texture = ImageIO.read(new File(sprite.getTexture()));
+    private void renderObject(Graphics2D g2, RPGLObject object) throws IOException {
+        BufferedImage texture = ImageIO.read(new File(object.getTexture()));
 
         g2.drawImage(texture,
-                (sprite.getX() - cameraX) * TILE_SIZE * SCALE,
-                ((sprite.getY() - cameraY) * TILE_SIZE - (texture.getHeight() / 4 - TILE_SIZE)) * SCALE
+                (SpriteUtils.getX(object) - cameraX) * TILE_SIZE * SCALE,
+                ((SpriteUtils.getY(object) - cameraY) * TILE_SIZE - (texture.getHeight() / 4 - TILE_SIZE)) * SCALE
                         + SPRITE_OFFSET_Y,
-                (sprite.getX() - cameraX + 1) * TILE_SIZE * SCALE,
-                (sprite.getY() - cameraY + 1) * TILE_SIZE * SCALE
+                (SpriteUtils.getX(object) - cameraX + 1) * TILE_SIZE * SCALE,
+                (SpriteUtils.getY(object) - cameraY + 1) * TILE_SIZE * SCALE
                         + SPRITE_OFFSET_Y,
                 (texture.getWidth() / 4) * stride,
-                (texture.getHeight() / 4) * sprite.getFacing(),
+                (texture.getHeight() / 4) * SpriteUtils.getRotation(object),
                 (texture.getWidth() / 4) * (stride + 1),
-                (texture.getHeight() / 4) * (sprite.getFacing() + 1),
+                (texture.getHeight() / 4) * (SpriteUtils.getRotation(object) + 1),
                 null
         );
+    }
+
+    private RPGLObject newObject(String objectId, int x, int y) {
+        return SpriteUtils.setRotation(SpriteUtils.setY(SpriteUtils.setX(RPGLFactory.newObject(objectId, "user"), x), y), SpriteUtils.FACING_DOWN);
     }
 
 }
