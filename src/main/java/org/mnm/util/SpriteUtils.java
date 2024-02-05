@@ -1,5 +1,6 @@
 package org.mnm.util;
 
+import org.rpgl.core.RPGLFactory;
 import org.rpgl.core.RPGLObject;
 import org.rpgl.json.JsonArray;
 
@@ -9,6 +10,14 @@ public final class SpriteUtils {
     public static final int FACING_LEFT = 1;
     public static final int FACING_UP = 2;
     public static final int FACING_RIGHT = 3;
+
+    public static RPGLObject newObject(String objectId, int x, int y, int rotation) {
+        return SpriteUtils.setRotation(SpriteUtils.setY(SpriteUtils.setX(RPGLFactory.newObject(objectId, "user"), x), y), rotation);
+    }
+
+    public static RPGLObject newObject(String objectId, JsonArray pos, JsonArray rot) {
+        return RPGLFactory.newObject(objectId, "user").setPosition(pos).setRotation(rot);
+    }
 
     public static int getX(RPGLObject object) {
         return (int) Math.round(object.getPosition().getDouble(0));

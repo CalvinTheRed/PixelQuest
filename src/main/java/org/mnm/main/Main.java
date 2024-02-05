@@ -27,7 +27,7 @@ public class Main {
 
         GamePanel gamePanel;
         try {
-            gamePanel = new GamePanel("resources/maps/test-island");
+            gamePanel = new GamePanel("resources/maps/test-island.json");
         } catch (IOException e) {
             System.out.println(e.getMessage());
             throw new RuntimeException(e);

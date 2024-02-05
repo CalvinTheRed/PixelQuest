@@ -1,17 +1,21 @@
 package org.mnm.core;
 
+import org.rpgl.json.JsonArray;
+
 import java.awt.image.BufferedImage;
 
-public class Map {
+public class GameMap {
 
     private final BufferedImage background;
     private final BufferedImage foreground;
-    private final boolean[][] collisions;
+    private final JsonArray collisions;
+    private final int tileSize;
 
-    public Map(BufferedImage background, BufferedImage foreground, boolean[][] collisions) {
+    public GameMap(BufferedImage background, BufferedImage foreground, JsonArray collisions, int tileSize) {
         this.background = background;
         this.foreground = foreground;
         this.collisions = collisions;
+        this.tileSize = tileSize;
     }
 
     public BufferedImage getBackground() {
@@ -22,8 +26,12 @@ public class Map {
         return this.foreground;
     }
 
+    public int getTileSize() {
+        return this.tileSize;
+    }
+
     public boolean canMoveToTile(int x, int y) {
-        return !collisions[y][x];
+        return this.collisions.getJsonArray(y).getInteger(x) == 0;
     }
 
 }

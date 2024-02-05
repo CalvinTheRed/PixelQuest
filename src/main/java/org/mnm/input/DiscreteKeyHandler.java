@@ -5,13 +5,13 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KeyHandler implements KeyListener {
+public class DiscreteKeyHandler implements KeyListener {
 
-    public boolean wDown, aDown, sDown, dDown, equalsDown, minusDown;
+    public boolean wDown, aDown, sDown, dDown;
 
     private final List<Integer> lockedKeys;
 
-    public KeyHandler() {
+    public DiscreteKeyHandler() {
         this.lockedKeys = new ArrayList<>();
     }
 
@@ -37,14 +37,6 @@ public class KeyHandler implements KeyListener {
                 }
                 case KeyEvent.VK_D -> {
                     dDown = true;
-                    lockKey(keyCode);
-                }
-                case KeyEvent.VK_EQUALS -> {
-                    equalsDown = true;
-                    lockKey(keyCode);
-                }
-                case KeyEvent.VK_MINUS -> {
-                    minusDown = true;
                     lockKey(keyCode);
                 }
             }

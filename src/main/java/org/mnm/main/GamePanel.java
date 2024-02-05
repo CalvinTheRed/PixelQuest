@@ -1,8 +1,8 @@
 package org.mnm.main;
 
-import org.mnm.core.Map;
+import org.mnm.core.GameMap;
 import org.mnm.core.MapLoader;
-import org.mnm.input.KeyHandler;
+import org.mnm.input.DiscreteKeyHandler;
 import org.mnm.util.SpriteUtils;
 import org.rpgl.core.RPGLFactory;
 import org.rpgl.core.RPGLObject;
@@ -19,41 +19,42 @@ import java.util.Comparator;
 public class GamePanel extends JPanel implements Runnable {
 
     final int FPS = 60;
-
-    final int TILE_SIZE = 12;
     final int SCALE = 4;
-
     final int COLS = 19;
     final int ROWS = 13;
 
-    private final int SPRITE_OFFSET_Y = -TILE_SIZE * SCALE / 4;
-    private final int TEXTURE_OFFSET_X = TILE_SIZE * SCALE * (COLS / 2);
-    private final int TEXTURE_OFFSET_Y = TILE_SIZE * SCALE * (ROWS / 2);
-
-    private final KeyHandler keyHandler = new KeyHandler();
-
+    private GameMap gameMap;
     private Thread gameThread;
+    private final DiscreteKeyHandler keyHandler = new DiscreteKeyHandler();
+
+    private int tileSize;
+    private int spriteOffsetY;
+    private int textureOffsetX;
+    private int textureOffsetY;
     private final int centerX, centerY;
     private int cameraX, cameraY;
+
     private int stride = 0;
 
-    private Map map;
+    RPGLObject focusObject = SpriteUtils.newObject("std:humanoid/commoner", 25, 18, SpriteUtils.FACING_DOWN);
 
-    RPGLObject focusObject = newObject("std:humanoid/commoner", 25, 18);
+    public GamePanel(String initialMap) throws IOException {
+        gameMap = MapLoader.getMap(initialMap);
+        this.tileSize = gameMap.getTileSize();
+        spriteOffsetY = -tileSize * SCALE / 4;
+        textureOffsetX = tileSize * SCALE * (COLS / 2);
+        textureOffsetY = tileSize * SCALE * (ROWS / 2);
 
-    public GamePanel(String initialMapDir) throws IOException {
         this.setPreferredSize(new Dimension(
-                TILE_SIZE * SCALE * COLS,
-                TILE_SIZE * SCALE * ROWS
+                tileSize * SCALE * COLS,
+                tileSize * SCALE * ROWS
         ));
         this.setBackground(Color.BLACK);
         this.setDoubleBuffered(true);
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
 
-        newObject("std:humanoid/commoner", 43, 26);
-
-        map = MapLoader.getMap(initialMapDir);
+//        newObject("std:humanoid/commoner", 43, 26);
 
         centerX = COLS / 2;
         centerY = ROWS / 2;
@@ -125,7 +126,7 @@ public class GamePanel extends JPanel implements Runnable {
                 return false;
             }
         }
-        return map.canMoveToTile((int) Math.round(x), (int) Math.round(y));
+        return gameMap.canMoveToTile((int) Math.round(x), (int) Math.round(y));
     }
 
     @Override
@@ -147,10 +148,10 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void renderBackgroundLayer(Graphics2D g2) throws IOException {
-        BufferedImage texture = map.getBackground();
+        BufferedImage texture = gameMap.getBackground();
         g2.drawImage(texture,
-                TILE_SIZE * SCALE * (centerX - cameraX) - TEXTURE_OFFSET_X,
-                TILE_SIZE * SCALE * (centerY - cameraY) - TEXTURE_OFFSET_Y,
+                tileSize * SCALE * (centerX - cameraX) - textureOffsetX,
+                tileSize * SCALE * (centerY - cameraY) - textureOffsetY,
                 texture.getWidth() * SCALE,
                 texture.getHeight() * SCALE,
                 null
@@ -172,10 +173,10 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void renderForegroundLayer(Graphics2D g2) {
-        BufferedImage texture = map.getForeground();
+        BufferedImage texture = gameMap.getForeground();
         g2.drawImage(texture,
-                TILE_SIZE * SCALE * (centerX - cameraX) - TEXTURE_OFFSET_X,
-                TILE_SIZE * SCALE * (centerY - cameraY) - TEXTURE_OFFSET_Y,
+                tileSize * SCALE * (centerX - cameraX) - textureOffsetX,
+                tileSize * SCALE * (centerY - cameraY) - textureOffsetY,
                 texture.getWidth() * SCALE,
                 texture.getHeight() * SCALE,
                 null
@@ -186,12 +187,12 @@ public class GamePanel extends JPanel implements Runnable {
         BufferedImage texture = ImageIO.read(new File(object.getTexture()));
 
         g2.drawImage(texture,
-                (SpriteUtils.getX(object) - cameraX) * TILE_SIZE * SCALE,
-                ((SpriteUtils.getY(object) - cameraY) * TILE_SIZE - (texture.getHeight() / 4 - TILE_SIZE)) * SCALE
-                        + SPRITE_OFFSET_Y,
-                (SpriteUtils.getX(object) - cameraX + 1) * TILE_SIZE * SCALE,
-                (SpriteUtils.getY(object) - cameraY + 1) * TILE_SIZE * SCALE
-                        + SPRITE_OFFSET_Y,
+                (SpriteUtils.getX(object) - cameraX) * tileSize * SCALE,
+                ((SpriteUtils.getY(object) - cameraY) * tileSize - (texture.getHeight() / 4 - tileSize)) * SCALE
+                        + spriteOffsetY,
+                (SpriteUtils.getX(object) - cameraX + 1) * tileSize * SCALE,
+                (SpriteUtils.getY(object) - cameraY + 1) * tileSize * SCALE
+                        + spriteOffsetY,
                 (texture.getWidth() / 4) * stride,
                 (texture.getHeight() / 4) * SpriteUtils.getRotation(object),
                 (texture.getWidth() / 4) * (stride + 1),
@@ -200,8 +201,6 @@ public class GamePanel extends JPanel implements Runnable {
         );
     }
 
-    private RPGLObject newObject(String objectId, int x, int y) {
-        return SpriteUtils.setRotation(SpriteUtils.setY(SpriteUtils.setX(RPGLFactory.newObject(objectId, "user"), x), y), SpriteUtils.FACING_DOWN);
-    }
+
 
 }
