@@ -15,10 +15,6 @@ public final class SpriteUtils {
         return SpriteUtils.setRotation(SpriteUtils.setY(SpriteUtils.setX(RPGLFactory.newObject(objectId, "user"), x), y), rotation);
     }
 
-    public static RPGLObject newObject(String objectId, JsonArray pos, JsonArray rot) {
-        return RPGLFactory.newObject(objectId, "user").setPosition(pos).setRotation(rot);
-    }
-
     public static int getX(RPGLObject object) {
         return (int) Math.round(object.getPosition().getDouble(0));
     }

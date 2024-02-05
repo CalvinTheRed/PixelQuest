@@ -2,8 +2,6 @@ package org.mnm.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mnm.util.SpriteUtils;
-import org.rpgl.core.RPGLFactory;
-import org.rpgl.core.RPGLObject;
 import org.rpgl.json.JsonArray;
 import org.rpgl.json.JsonObject;
 
