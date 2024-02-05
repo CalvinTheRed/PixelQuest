@@ -23,7 +23,7 @@ public class Main {
         JFrame window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);
-        window.setTitle("Might & Magic");
+        window.setTitle("Pixel Quest");
 
         GamePanel gamePanel;
         try {
