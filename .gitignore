@@ -12,7 +12,9 @@ build/
 *.iws
 *.iml
 *.ipr
-out/
-.idea/
 !**/src/main/**/out/
 !**/src/test/**/out/
+
+.idea/
+out/
+src/main/resources/META-INF/

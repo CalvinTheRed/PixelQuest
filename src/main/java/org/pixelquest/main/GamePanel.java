@@ -33,9 +33,9 @@ public class GamePanel extends JPanel implements Runnable {
             KeyEvent.VK_D
     ));
 
-    private final int tileSize = 12; // pixels
-    private final int spriteOffsetY; // pixels
-    private double cameraX, cameraY; // tiles
+    private final int tileSize = 12;
+    private final int spriteOffsetY;
+    private double cameraX, cameraY;
 
     private double speed = 0.14d;
     private Integer handlingKeyPress;
