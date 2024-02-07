@@ -9,9 +9,11 @@ public class ContinuousKeyHandler implements KeyListener {
 
     public boolean wDown, aDown, sDown, dDown;
     public final List<Integer> pressOrder;
+    public final List<Integer> whitelist;
 
-    public ContinuousKeyHandler() {
+    public ContinuousKeyHandler(List<Integer> whitelist) {
         this.pressOrder = new ArrayList<>();
+        this.whitelist = whitelist;
     }
 
     @Override
@@ -26,7 +28,7 @@ public class ContinuousKeyHandler implements KeyListener {
             case KeyEvent.VK_S -> sDown = true;
             case KeyEvent.VK_D -> dDown = true;
         }
-        if (!pressOrder.contains(code)) {
+        if (this.whitelist.contains(code) && !this.pressOrder.contains(code)) {
             pressOrder.add(0, code);
         }
     }

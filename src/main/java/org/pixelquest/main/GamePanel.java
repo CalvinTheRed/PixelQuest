@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.List;
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -25,13 +26,18 @@ public class GamePanel extends JPanel implements Runnable {
 
     private GameMap gameMap;
     private Thread gameThread;
-    private final ContinuousKeyHandler keyHandler = new ContinuousKeyHandler();
+    private final ContinuousKeyHandler keyHandler = new ContinuousKeyHandler(List.of(
+            KeyEvent.VK_W,
+            KeyEvent.VK_A,
+            KeyEvent.VK_S,
+            KeyEvent.VK_D
+    ));
 
     private final int tileSize = 12; // pixels
     private final int spriteOffsetY; // pixels
     private double cameraX, cameraY; // tiles
 
-    private double speed = 0.07d;
+    private double speed = 0.14d;
     private Integer handlingKeyPress;
 
     RPGLObject focusObject = SpriteUtils.newObject("std:humanoid/commoner", 25, 18, SpriteUtils.FACING_DOWN);
