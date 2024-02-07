@@ -12,28 +12,28 @@ public final class SpriteUtils {
     public static final int FACING_RIGHT = 3;
 
     public static RPGLObject newObject(String objectId, int x, int y, int rotation) {
-        return SpriteUtils.setRotation(SpriteUtils.setY(SpriteUtils.setX(RPGLFactory.newObject(objectId, "user"), x), y), rotation);
+        return SpriteUtils.setStride(SpriteUtils.setRotation(SpriteUtils.setY(SpriteUtils.setX(RPGLFactory.newObject(objectId, "user"), x), y), rotation), 0);
     }
 
-    public static int getX(RPGLObject object) {
-        return (int) Math.round(object.getPosition().getDouble(0));
+    public static double getX(RPGLObject object) {
+        return object.getPosition().getDouble(0);
     }
 
-    public static RPGLObject setX(RPGLObject object, int x) {
+    public static RPGLObject setX(RPGLObject object, double x) {
         return object.setPosition(new JsonArray() {{
-            this.addDouble((double) x);
+            this.addDouble(x);
             this.addDouble(object.getPosition().getDouble(1));
         }});
     }
 
-    public static int getY(RPGLObject object) {
-        return (int) Math.round(object.getPosition().getDouble(1));
+    public static double getY(RPGLObject object) {
+        return object.getPosition().getDouble(1);
     }
 
-    public static RPGLObject setY(RPGLObject object, int y) {
+    public static RPGLObject setY(RPGLObject object, double y) {
         return object.setPosition(new JsonArray() {{
             this.addDouble(object.getPosition().getDouble(0));
-            this.addDouble((double) y);
+            this.addDouble(y);
         }});
     }
 
@@ -44,6 +44,18 @@ public final class SpriteUtils {
     public static RPGLObject setRotation(RPGLObject object, int rotation) {
         return object.setRotation(new JsonArray() {{
             this.addDouble((double) rotation);
+            this.addDouble((double) SpriteUtils.getStride(object));
+        }});
+    }
+
+    public static int getStride(RPGLObject object) {
+        return (int) Math.round(object.getRotation().getDouble(1));
+    }
+
+    public static RPGLObject setStride(RPGLObject object, int stride) {
+        return object.setRotation(new JsonArray() {{
+            this.addDouble((double) SpriteUtils.getRotation(object));
+            this.addDouble((double) stride);
         }});
     }
 

@@ -26,7 +26,9 @@ public class ContinuousKeyHandler implements KeyListener {
             case KeyEvent.VK_S -> sDown = true;
             case KeyEvent.VK_D -> dDown = true;
         }
-        pressOrder.add(0, code);
+        if (!pressOrder.contains(code)) {
+            pressOrder.add(0, code);
+        }
     }
 
     @Override
@@ -41,13 +43,11 @@ public class ContinuousKeyHandler implements KeyListener {
         pressOrder.remove((Integer) code);
     }
 
-    public int getPriorityKey(List<Integer> pressedKeys) {
-        for (Integer key : pressedKeys) {
-            if (pressedKeys.contains(key)) {
-                return key;
-            }
+    public Integer getKey() {
+        if (pressOrder.isEmpty()) {
+            return null;
         }
-        return -1;
+        return pressOrder.get(0);
     }
 
 }

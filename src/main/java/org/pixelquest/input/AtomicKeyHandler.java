@@ -30,7 +30,9 @@ public class AtomicKeyHandler implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-
+        if (this.lastPressed != null && this.lastPressed == e.getKeyCode()) {
+            this.lastPressed = null;
+        }
     }
 
     public void lock() {
