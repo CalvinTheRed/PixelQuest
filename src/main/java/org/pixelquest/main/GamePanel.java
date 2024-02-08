@@ -26,19 +26,14 @@ public class GamePanel extends JPanel implements Runnable {
 
     private GameMap gameMap;
     private Thread gameThread;
-    private final ContinuousKeyHandler keyHandler = new ContinuousKeyHandler(List.of(
-            KeyEvent.VK_W,
-            KeyEvent.VK_A,
-            KeyEvent.VK_S,
-            KeyEvent.VK_D
-    ));
+    private final ContinuousKeyHandler keyHandler = new ContinuousKeyHandler();
 
     private final int tileSize = 12;
     private final int spriteOffsetY;
     private double cameraX, cameraY;
 
-    private double speed = 0.14d;
-    private Integer handlingKeyPress;
+    private double speed = 0.07d;
+    private Integer keyBeingHandled;
 
     RPGLObject focusObject = SpriteUtils.newObject("std:humanoid/commoner", 25, 18, SpriteUtils.FACING_DOWN);
 
@@ -55,8 +50,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
 
-        cameraX = SpriteUtils.getX(focusObject) - COLS / 2;
-        cameraY = SpriteUtils.getY(focusObject) - ROWS / 2;
+        focusCamera(focusObject);
     }
 
     @Override
@@ -80,82 +74,94 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
-        Integer code = keyHandler.getKey();
+        Integer code = keyHandler.getPriorityKey(List.of(KeyEvent.VK_W, KeyEvent.VK_A, KeyEvent.VK_S, KeyEvent.VK_D));
 
         // look to start processing a key press
-        if (handlingKeyPress == null) {
-            handlingKeyPress = code;
+        if (keyBeingHandled == null) {
+            keyBeingHandled = code;
         }
 
         // process current key
-        if (handlingKeyPress != null) {
-            switch (handlingKeyPress) {
+        if (keyBeingHandled != null) {
+            switch (keyBeingHandled) {
                 case KeyEvent.VK_W -> {
                     SpriteUtils.setRotation(focusObject, SpriteUtils.FACING_UP);
-                    SpriteUtils.setStride(focusObject, (SpriteUtils.getStride(focusObject) + 1) % 4);
                     int targetX = (int) SpriteUtils.getX(focusObject);
                     int targetY = (int) Math.ceil(SpriteUtils.getY(focusObject)) - 1;
                     if (this.isSpaceEmpty(targetX, targetY) && gameMap.canMoveToTile(targetX, targetY)) {
                         cameraY -= speed;
                         SpriteUtils.setY(focusObject, SpriteUtils.getY(focusObject) - speed);
+                        if (SpriteUtils.getStride(focusObject) % 2 == 0 && SpriteUtils.getY(focusObject) % 1 < 0.5d) {
+                            SpriteUtils.setStride(focusObject, (SpriteUtils.getStride(focusObject) + 1) % 4);
+                        }
                         if (cameraY % 1 < speed / 2d || cameraY % 1 > 1 - speed / 2d) {
                             cameraY = Math.round(cameraY);
                             SpriteUtils.setY(focusObject, Math.round(SpriteUtils.getY(focusObject)));
-                            this.handlingKeyPress = null;
+                            SpriteUtils.setStride(focusObject, (SpriteUtils.getStride(focusObject) + 1) % 4);
+                            this.keyBeingHandled = null;
                         }
                     } else {
-                        this.handlingKeyPress = null;
+                        this.keyBeingHandled = null;
                     }
                 }
                 case KeyEvent.VK_A -> {
                     SpriteUtils.setRotation(focusObject, SpriteUtils.FACING_LEFT);
-                    SpriteUtils.setStride(focusObject, (SpriteUtils.getStride(focusObject) + 1) % 4);
                     int targetX = (int) Math.ceil(SpriteUtils.getX(focusObject)) - 1;
                     int targetY = (int) SpriteUtils.getY(focusObject);
                     if (this.isSpaceEmpty(targetX, targetY) && gameMap.canMoveToTile(targetX, targetY)) {
                         cameraX -= speed;
                         SpriteUtils.setX(focusObject, SpriteUtils.getX(focusObject) - speed);
+                        if (SpriteUtils.getStride(focusObject) % 2 == 0 && SpriteUtils.getX(focusObject) % 1 < 0.5d) {
+                            SpriteUtils.setStride(focusObject, (SpriteUtils.getStride(focusObject) + 1) % 4);
+                        }
                         if (cameraX % 1 < speed / 2d || cameraX % 1 > 1 - speed / 2d) {
                             cameraX = Math.round(cameraX);
                             SpriteUtils.setX(focusObject, Math.round(SpriteUtils.getX(focusObject)));
-                            this.handlingKeyPress = null;
+                            SpriteUtils.setStride(focusObject, (SpriteUtils.getStride(focusObject) + 1) % 4);
+                            this.keyBeingHandled = null;
                         }
                     } else {
-                        this.handlingKeyPress = null;
+                        this.keyBeingHandled = null;
                     }
                 }
                 case KeyEvent.VK_S -> {
                     SpriteUtils.setRotation(focusObject, SpriteUtils.FACING_DOWN);
-                    SpriteUtils.setStride(focusObject, (SpriteUtils.getStride(focusObject) + 1) % 4);
                     int targetX = (int) SpriteUtils.getX(focusObject);
                     int targetY = (int) Math.floor(SpriteUtils.getY(focusObject)) + 1;
-                    if (this.isSpaceEmpty(targetX, targetY) && gameMap.canMoveToTile(targetX, targetY)) {
+                    if (this.isSpaceEmpty(targetX, targetY) && gameMap.canMoveToTile(targetX, targetY)) { // short-circuit by checking if coordinate is decimal?
                         cameraY += speed;
                         SpriteUtils.setY(focusObject, SpriteUtils.getY(focusObject) + speed);
+                        if (SpriteUtils.getStride(focusObject) % 2 == 0 && SpriteUtils.getY(focusObject) % 1 > 0.5d) {
+                            SpriteUtils.setStride(focusObject, (SpriteUtils.getStride(focusObject) + 1) % 4);
+                        }
                         if (cameraY % 1 < speed / 2d || cameraY % 1 > 1 - speed / 2d) {
                             cameraY = Math.round(cameraY);
                             SpriteUtils.setY(focusObject, Math.round(SpriteUtils.getY(focusObject)));
-                            this.handlingKeyPress = null;
+                            SpriteUtils.setStride(focusObject, (SpriteUtils.getStride(focusObject) + 1) % 4);
+                            this.keyBeingHandled = null;
                         }
                     } else {
-                        this.handlingKeyPress = null;
+                        this.keyBeingHandled = null;
                     }
                 }
                 case KeyEvent.VK_D -> {
                     SpriteUtils.setRotation(focusObject, SpriteUtils.FACING_RIGHT);
-                    SpriteUtils.setStride(focusObject, (SpriteUtils.getStride(focusObject) + 1) % 4);
                     int targetX = (int) Math.floor(SpriteUtils.getX(focusObject)) + 1;
                     int targetY = (int) SpriteUtils.getY(focusObject);
                     if (this.isSpaceEmpty(targetX, targetY) && gameMap.canMoveToTile(targetX, targetY)) {
                         cameraX += speed;
                         SpriteUtils.setX(focusObject, SpriteUtils.getX(focusObject) + speed);
+                        if (SpriteUtils.getStride(focusObject) % 2 == 0 && SpriteUtils.getX(focusObject) % 1 > 0.5d) {
+                            SpriteUtils.setStride(focusObject, (SpriteUtils.getStride(focusObject) + 1) % 4);
+                        }
                         if (cameraX % 1 < speed / 2d || cameraX % 1 > 1 - speed / 2d) {
                             cameraX = Math.round(cameraX);
                             SpriteUtils.setX(focusObject, Math.round(SpriteUtils.getX(focusObject)));
-                            this.handlingKeyPress = null;
+                            SpriteUtils.setStride(focusObject, (SpriteUtils.getStride(focusObject) + 1) % 4);
+                            this.keyBeingHandled = null;
                         }
                     } else {
-                        this.handlingKeyPress = null;
+                        this.keyBeingHandled = null;
                     }
                 }
             }
@@ -218,13 +224,15 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void renderForegroundLayer(Graphics2D g2) {
         BufferedImage texture = gameMap.getForeground();
-        g2.drawImage(texture,
-                (int) (tileSize * SCALE * -cameraX),
-                (int) (tileSize * SCALE * -cameraY),
-                texture.getWidth() * SCALE,
-                texture.getHeight() * SCALE,
-                null
-        );
+        if (texture != null) {
+            g2.drawImage(texture,
+                    (int) (tileSize * SCALE * -cameraX),
+                    (int) (tileSize * SCALE * -cameraY),
+                    texture.getWidth() * SCALE,
+                    texture.getHeight() * SCALE,
+                    null
+            );
+        }
     }
 
     private void renderObject(Graphics2D g2, RPGLObject object) throws IOException {
@@ -245,6 +253,9 @@ public class GamePanel extends JPanel implements Runnable {
         );
     }
 
-
+    public void focusCamera(RPGLObject object) {
+        this.cameraX = SpriteUtils.getX(object) - COLS / 2;
+        this.cameraY = SpriteUtils.getY(object) - ROWS / 2;
+    }
 
 }

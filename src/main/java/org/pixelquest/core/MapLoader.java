@@ -18,7 +18,14 @@ public final class MapLoader {
         JsonObject mapData = new JsonObject(new ObjectMapper().readValue(new File(mapFile), HashMap.class));
 
         BufferedImage background = ImageIO.read(new File(mapData.getString("background")));
-        BufferedImage foreground = ImageIO.read(new File(mapData.getString("foreground")));
+
+        String foregroundPath = mapData.getString("foreground");
+        BufferedImage foreground;
+        if (foregroundPath != null) {
+            foreground = ImageIO.read(new File(foregroundPath));
+        } else {
+            foreground = null;
+        }
 
         JsonArray objects = mapData.getJsonArray("objects");
         for (int i = 0; i < objects.size(); i++) {

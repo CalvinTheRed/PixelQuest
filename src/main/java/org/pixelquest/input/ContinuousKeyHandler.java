@@ -7,13 +7,10 @@ import java.util.List;
 
 public class ContinuousKeyHandler implements KeyListener {
 
-    public boolean wDown, aDown, sDown, dDown;
     public final List<Integer> pressOrder;
-    public final List<Integer> whitelist;
 
-    public ContinuousKeyHandler(List<Integer> whitelist) {
+    public ContinuousKeyHandler() {
         this.pressOrder = new ArrayList<>();
-        this.whitelist = whitelist;
     }
 
     @Override
@@ -22,34 +19,23 @@ public class ContinuousKeyHandler implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
-        switch (code) {
-            case KeyEvent.VK_W -> wDown = true;
-            case KeyEvent.VK_A -> aDown = true;
-            case KeyEvent.VK_S -> sDown = true;
-            case KeyEvent.VK_D -> dDown = true;
-        }
-        if (this.whitelist.contains(code) && !this.pressOrder.contains(code)) {
+        if (!pressOrder.contains(code)) {
             pressOrder.add(0, code);
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        int code = e.getKeyCode();
-        switch (code) {
-            case KeyEvent.VK_W -> wDown = false;
-            case KeyEvent.VK_A -> aDown = false;
-            case KeyEvent.VK_S -> sDown = false;
-            case KeyEvent.VK_D -> dDown = false;
-        }
-        pressOrder.remove((Integer) code);
+        pressOrder.remove((Integer) e.getKeyCode());
     }
 
-    public Integer getKey() {
-        if (pressOrder.isEmpty()) {
-            return null;
+    public Integer getPriorityKey(List<Integer> codes) {
+        for (Integer code : this.pressOrder) {
+            if (codes.contains(code)) {
+                return code;
+            }
         }
-        return pressOrder.get(0);
+        return null;
     }
 
 }
