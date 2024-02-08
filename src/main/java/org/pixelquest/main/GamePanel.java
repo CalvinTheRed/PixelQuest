@@ -99,6 +99,7 @@ public class GamePanel extends JPanel implements Runnable {
                             SpriteUtils.setY(focusObject, Math.round(SpriteUtils.getY(focusObject)));
                             SpriteUtils.setStride(focusObject, (SpriteUtils.getStride(focusObject) + 1) % 4);
                             this.keyBeingHandled = null;
+                            this.checkForWarp();
                         }
                     } else {
                         this.keyBeingHandled = null;
@@ -119,6 +120,7 @@ public class GamePanel extends JPanel implements Runnable {
                             SpriteUtils.setX(focusObject, Math.round(SpriteUtils.getX(focusObject)));
                             SpriteUtils.setStride(focusObject, (SpriteUtils.getStride(focusObject) + 1) % 4);
                             this.keyBeingHandled = null;
+                            this.checkForWarp();
                         }
                     } else {
                         this.keyBeingHandled = null;
@@ -139,6 +141,7 @@ public class GamePanel extends JPanel implements Runnable {
                             SpriteUtils.setY(focusObject, Math.round(SpriteUtils.getY(focusObject)));
                             SpriteUtils.setStride(focusObject, (SpriteUtils.getStride(focusObject) + 1) % 4);
                             this.keyBeingHandled = null;
+                            this.checkForWarp();
                         }
                     } else {
                         this.keyBeingHandled = null;
@@ -159,6 +162,7 @@ public class GamePanel extends JPanel implements Runnable {
                             SpriteUtils.setX(focusObject, Math.round(SpriteUtils.getX(focusObject)));
                             SpriteUtils.setStride(focusObject, (SpriteUtils.getStride(focusObject) + 1) % 4);
                             this.keyBeingHandled = null;
+                            this.checkForWarp();
                         }
                     } else {
                         this.keyBeingHandled = null;
@@ -251,6 +255,25 @@ public class GamePanel extends JPanel implements Runnable {
                 (texture.getHeight() / 4) * (SpriteUtils.getRotation(object) + 1),
                 null
         );
+    }
+
+    private void checkForWarp() {
+        GameMap.WarpZoneDetails details = gameMap.isWarpZone(
+                (int) SpriteUtils.getX(focusObject), (int) SpriteUtils.getY(focusObject)
+        );
+        if (details != null) {
+            try {
+                UUIDTable.clear(); // TODO this should eventually be managed by rendering creatures within a RPGLContext, and updating the context on map change.
+                UUIDTable.register(focusObject);
+                gameMap = MapLoader.getMap(details.map);
+                SpriteUtils.setX(focusObject, details.coordinate.getInteger(0));
+                SpriteUtils.setY(focusObject, details.coordinate.getInteger(1));
+                focusCamera(focusObject);
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public void focusCamera(RPGLObject object) {

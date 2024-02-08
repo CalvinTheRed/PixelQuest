@@ -62,5 +62,67 @@
       "pos": [ 16, 9 ],
       "rot": 0
     }
+  ],
+  "warp_zones": [
+    {
+      "pos": [ 49, 21 ],
+      "map": "resources/maps/test-forest.json",
+      "coordinate": [ 10, 20 ]
+    },
+    {
+      "pos": [ 50, 21 ],
+      "map": "resources/maps/test-forest.json",
+      "coordinate": [ 10, 20 ]
+    },
+    {
+      "pos": [ 51, 21 ],
+      "map": "resources/maps/test-forest.json",
+      "coordinate": [ 10, 20 ]
+    },
+    {
+      "pos": [ 49, 22 ],
+      "map": "resources/maps/test-forest.json",
+      "coordinate": [ 10, 20 ]
+    },
+    {
+      "pos": [ 50, 22 ],
+      "map": "resources/maps/test-forest.json",
+      "coordinate": [ 10, 20 ]
+    },
+    {
+      "pos": [ 51, 22 ],
+      "map": "resources/maps/test-forest.json",
+      "coordinate": [ 10, 20 ]
+    },
+    {
+      "pos": [ 49, 23 ],
+      "map": "resources/maps/test-forest.json",
+      "coordinate": [ 10, 20 ]
+    },
+    {
+      "pos": [ 50, 23 ],
+      "map": "resources/maps/test-forest.json",
+      "coordinate": [ 10, 20 ]
+    },
+    {
+      "pos": [ 51, 23 ],
+      "map": "resources/maps/test-forest.json",
+      "coordinate": [ 10, 20 ]
+    },
+    {
+      "pos": [ 49, 24 ],
+      "map": "resources/maps/test-forest.json",
+      "coordinate": [ 10, 20 ]
+    },
+    {
+      "pos": [ 50, 24 ],
+      "map": "resources/maps/test-forest.json",
+      "coordinate": [ 10, 20 ]
+    },
+    {
+      "pos": [ 51, 24 ],
+      "map": "resources/maps/test-forest.json",
+      "coordinate": [ 10, 20 ]
+    }
   ]
 }

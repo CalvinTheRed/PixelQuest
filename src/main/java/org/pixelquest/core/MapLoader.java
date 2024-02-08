@@ -35,7 +35,7 @@ public final class MapLoader {
                     .setName(objectData.getString("name"));
         }
 
-        return new GameMap(background, foreground, mapData.getJsonArray("collisions"));
+        return new GameMap(background, foreground, mapData.getJsonArray("collisions"), mapData.getJsonArray("warp_zones"));
     }
 
 }
