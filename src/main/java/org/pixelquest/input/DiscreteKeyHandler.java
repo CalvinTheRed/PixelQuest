@@ -7,11 +7,11 @@ import java.util.List;
 
 public class DiscreteKeyHandler implements KeyListener {
 
-    public boolean wDown, aDown, sDown, dDown;
-
+    private final List<Integer> keysDown;
     private final List<Integer> lockedKeys;
 
     public DiscreteKeyHandler() {
+        this.keysDown = new ArrayList<>();
         this.lockedKeys = new ArrayList<>();
     }
 
@@ -20,42 +20,46 @@ public class DiscreteKeyHandler implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        int keyCode = e.getKeyCode();
-        if (!lockedKeys.contains(keyCode)) {
-            switch(keyCode) {
-                case KeyEvent.VK_W -> {
-                    wDown = true;
-                    lockKey(keyCode);
-                }
-                case KeyEvent.VK_A -> {
-                    aDown = true;
-                    lockKey(keyCode);
-                }
-                case KeyEvent.VK_S -> {
-                    sDown = true;
-                    lockKey(keyCode);
-                }
-                case KeyEvent.VK_D -> {
-                    dDown = true;
-                    lockKey(keyCode);
-                }
-            }
+        int code = e.getKeyCode();
+        if (!lockedKeys.contains(code)) {
+            keyDown(code);
+            lockKey(code);
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        unlockKey(e.getKeyCode());
+        int code = e.getKeyCode();
+        keyUp(code);
+        unlockKey(code);
     }
-
-    public void lockKey(int keyCode) {
-        if (!this.lockedKeys.contains(keyCode)) {
-            this.lockedKeys.add(keyCode);
+    
+    public void keyDown(int code) {
+        if (!this.keysDown.contains(code)) {
+            this.keysDown.add(code);
         }
     }
 
-    public void unlockKey(int keyCode) {
-        this.lockedKeys.remove((Integer) keyCode);
+    public void keyUp(int code) {
+        this.keysDown.remove((Integer) code);
+    }
+
+    public void lockKey(int code) {
+        if (!this.lockedKeys.contains(code)) {
+            this.lockedKeys.add(code);
+        }
+    }
+
+    public void unlockKey(int code) {
+        this.lockedKeys.remove((Integer) code);
+    }
+
+    public boolean isKeyDown(int code) {
+        return this.keysDown.contains(code);
+    }
+
+    public void acknowledgeKeyPressed(int code) {
+        this.keysDown.remove((Integer) code);
     }
 
 }
