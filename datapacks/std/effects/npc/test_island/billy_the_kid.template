@@ -1,0 +1,28 @@
+{
+  "metadata": {
+
+  },
+  "name": "Billy the Kid's Dialog Tree",
+  "description": "",
+  "subevent_filters": {
+    "get_dialog": [
+      {
+        "conditions": [
+          {
+            "condition": "objects_match",
+            "subevent": "target",
+            "effect": "target"
+          }
+        ],
+        "functions": [
+          {
+            "function": "add_dialog",
+            "dialog": [
+              "Hey, I'm hiding here! Find your own spot!"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

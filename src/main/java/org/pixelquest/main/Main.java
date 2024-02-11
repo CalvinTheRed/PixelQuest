@@ -1,7 +1,11 @@
 package org.pixelquest.main;
 
+import org.pixelquest.rpgl.functions.AddDialog;
+import org.pixelquest.rpgl.subevents.GetDialog;
 import org.rpgl.core.RPGLCore;
 import org.rpgl.datapack.DatapackLoader;
+import org.rpgl.function.Function;
+import org.rpgl.subevent.Subevent;
 
 import javax.swing.*;
 import java.io.File;
@@ -16,6 +20,8 @@ public class Main {
 
     private static void setupRPGL() {
         RPGLCore.initialize();
+        Subevent.SUBEVENTS.put("get_dialog", new GetDialog());
+        Function.FUNCTIONS.put("add_dialog", new AddDialog());
         DatapackLoader.loadDatapacks(new File("datapacks"));
     }
 

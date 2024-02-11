@@ -1,7 +1,10 @@
 package org.pixelquest.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.pixelquest.rpgl.core.CustomContext;
 import org.pixelquest.util.SpriteUtils;
+import org.rpgl.core.RPGLContext;
+import org.rpgl.core.RPGLObject;
 import org.rpgl.json.JsonArray;
 import org.rpgl.json.JsonObject;
 
@@ -27,15 +30,23 @@ public final class MapLoader {
             foreground = null;
         }
 
+        RPGLContext context = new CustomContext();
+
         JsonArray objects = mapData.getJsonArray("objects");
         for (int i = 0; i < objects.size(); i++) {
             JsonObject objectData = objects.getJsonObject(i);
             JsonArray pos = objectData.getJsonArray("pos");
-            SpriteUtils.newObject(objectData.getString("id"), pos.getInteger(0), pos.getInteger(1), objectData.getInteger("rot"))
-                    .setName(objectData.getString("name"));
+            RPGLObject newObject = SpriteUtils.newObject(
+                    objectData.getString("id"),
+                    pos.getInteger(0),
+                    pos.getInteger(1),
+                    objectData.getInteger("rot")
+            );
+            newObject.setName(objectData.getString("name"));
+            context.add(newObject);
         }
 
-        return new GameMap(background, foreground, mapData.getJsonArray("collisions"), mapData.getJsonArray("warp_zones"));
+        return new GameMap(background, foreground, mapData.getJsonArray("collisions"), mapData.getJsonArray("warp_zones"), context);
     }
 
 }

@@ -1,5 +1,7 @@
 package org.pixelquest.core;
 
+import org.pixelquest.rpgl.core.CustomContext;
+import org.rpgl.core.RPGLContext;
 import org.rpgl.json.JsonArray;
 import org.rpgl.json.JsonObject;
 
@@ -11,6 +13,7 @@ public class GameMap {
     private final BufferedImage foreground;
     private final JsonArray collisions;
     private final JsonArray warpZones;
+    private final RPGLContext context;
 
     public class WarpZoneDetails {
         public String map;
@@ -22,11 +25,12 @@ public class GameMap {
         }
     }
 
-    public GameMap(BufferedImage background, BufferedImage foreground, JsonArray collisions, JsonArray warpZones) {
+    public GameMap(BufferedImage background, BufferedImage foreground, JsonArray collisions, JsonArray warpZones, RPGLContext context) {
         this.background = background;
         this.foreground = foreground;
         this.collisions = collisions;
         this.warpZones = warpZones;
+        this.context = context;
     }
 
     public BufferedImage getBackground() {
@@ -50,6 +54,10 @@ public class GameMap {
             }
         }
         return null;
+    }
+
+    public CustomContext getContext() {
+        return (CustomContext) this.context;
     }
 
 }

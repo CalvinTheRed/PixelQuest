@@ -57,7 +57,7 @@
       "rot": 1
     },
     {
-      "id": "std:humanoid/commoner",
+      "id": "std:test_island/billy_the_kid",
       "name": "Billy the Kid",
       "pos": [ 16, 9 ],
       "rot": 0

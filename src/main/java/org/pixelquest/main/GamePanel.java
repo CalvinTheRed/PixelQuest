@@ -4,9 +4,11 @@ import org.pixelquest.core.GameMap;
 import org.pixelquest.core.MapLoader;
 import org.pixelquest.input.ContinuousKeyHandler;
 import org.pixelquest.input.DiscreteKeyHandler;
+import org.pixelquest.rpgl.subevents.GetDialog;
 import org.pixelquest.util.SpriteUtils;
 import org.rpgl.core.RPGLObject;
 import org.rpgl.json.JsonArray;
+import org.rpgl.json.JsonObject;
 import org.rpgl.uuidtable.UUIDTable;
 
 import javax.imageio.ImageIO;
@@ -57,6 +59,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.setFocusable(true);
 
         focusCamera(focusObject);
+        gameMap.getContext().add(focusObject);
     }
 
     @Override
@@ -109,13 +112,15 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void renderObjectLayer(Graphics2D g2) {
-        UUIDTable.getObjects().stream().sorted(Comparator.comparingDouble(SpriteUtils::getY)).forEach(object -> {
-            try {
-                this.renderObject(g2, object);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        gameMap.getContext().getContextObjects().stream()
+                .sorted(Comparator.comparingDouble(SpriteUtils::getY))
+                .forEach(object -> {
+                    try {
+                        this.renderObject(g2, object);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 
     private void renderObject(Graphics2D g2, RPGLObject object) throws IOException {
@@ -172,7 +177,7 @@ public class GamePanel extends JPanel implements Runnable {
                     20
             );
             g2.setFont(new Font("EXEPixelPerfect", Font.PLAIN, 20));
-            g2.drawString(this.currentDialog.getString(0), borderThickness * 3, borderThickness * 5);
+            g2.drawString(this.currentDialog.getString(0), borderThickness * 3, borderThickness * 6);
         }
     }
 
@@ -183,7 +188,12 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void update() {
         updateMotion();
-        updateDialog();
+        try {
+            updateDialog();
+        } catch (Exception e) {
+            System.out.println("Failed to update dialog!");
+            System.out.println(e.getMessage());
+        }
     }
 
     public void updateMotion() {
@@ -285,36 +295,67 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    public void updateDialog() {
+    public void updateDialog() throws Exception {
         if (this.discreteKeyHandler.isKeyDown(KeyEvent.VK_SPACE)) {
             this.discreteKeyHandler.acknowledgeKeyPressed(KeyEvent.VK_SPACE);
-            RPGLObject target = null;
+            final RPGLObject target;
             switch(SpriteUtils.getRotation(this.focusObject)) {
-                case SpriteUtils.FACING_DOWN -> target = this.objectsAt(
-                        SpriteUtils.getX(this.focusObject),
-                        SpriteUtils.getY(this.focusObject) + 1
-                ).get(0);
-                case SpriteUtils.FACING_LEFT -> target = this.objectsAt(
-                        SpriteUtils.getX(this.focusObject) - 1,
-                        SpriteUtils.getY(this.focusObject)
-                ).get(0);
-                case SpriteUtils.FACING_UP -> target = this.objectsAt(
-                        SpriteUtils.getX(this.focusObject),
-                        SpriteUtils.getY(this.focusObject) - 1
-                ).get(0);
-                case SpriteUtils.FACING_RIGHT -> target = this.objectsAt(
-                        SpriteUtils.getX(this.focusObject) + 1,
-                        SpriteUtils.getY(this.focusObject)
-                ).get(0);
+                case SpriteUtils.FACING_DOWN -> {
+                    List<RPGLObject> objectsAt = this.objectsAt(
+                            SpriteUtils.getX(this.focusObject),
+                            SpriteUtils.getY(this.focusObject) + 1
+                    );
+                    if (objectsAt.isEmpty()) {
+                        target = null;
+                    } else {
+                        target = objectsAt.get(0);
+                    }
+                }
+                case SpriteUtils.FACING_LEFT -> {
+                    List<RPGLObject> objectsAt = this.objectsAt(
+                            SpriteUtils.getX(this.focusObject) - 1,
+                            SpriteUtils.getY(this.focusObject)
+                    );
+                    if (objectsAt.isEmpty()) {
+                        target = null;
+                    } else {
+                        target = objectsAt.get(0);
+                    }
+                }
+                case SpriteUtils.FACING_UP -> {
+                    List<RPGLObject> objectsAt = this.objectsAt(
+                            SpriteUtils.getX(this.focusObject),
+                            SpriteUtils.getY(this.focusObject) - 1
+                    );
+                    if (objectsAt.isEmpty()) {
+                        target = null;
+                    } else {
+                        target = objectsAt.get(0);
+                    }
+                }
+                case SpriteUtils.FACING_RIGHT -> {
+                    List<RPGLObject> objectsAt = this.objectsAt(
+                            SpriteUtils.getX(this.focusObject) + 1,
+                            SpriteUtils.getY(this.focusObject)
+                    );
+                    if (objectsAt.isEmpty()) {
+                        target = null;
+                    } else {
+                        target = objectsAt.get(0);
+                    }
+                }
+                default -> target = null;
             }
             if (target != null) {
                 if (this.currentDialog == null) {
                     // start dialog
-                    this.currentDialog = new JsonArray() {{
-                        this.addString("Why hello, Player! I've been waiting for you.");
-                        this.addString("My son jumped into the water and now I can't find him!");
-                        this.addString("Would you please check to see if he is alright?");
-                    }};
+                    this.currentDialog = new GetDialog()
+                            .joinSubeventData(new JsonObject())
+                            .setSource(focusObject)
+                            .prepare(gameMap.getContext(), focusObject.getPosition())
+                            .setTarget(target)
+                            .invoke(gameMap.getContext(), focusObject.getPosition())
+                            .getDialog();
                 } else if (!this.currentDialog.asList().isEmpty()) {
                     // continue dialog
                     this.currentDialog.asList().remove(0);
@@ -352,9 +393,9 @@ public class GamePanel extends JPanel implements Runnable {
         );
         if (details != null) {
             try {
-                UUIDTable.clear(); // TODO this should eventually be managed by rendering creatures within a RPGLContext, and updating the context on map change.
-                UUIDTable.register(focusObject);
+                gameMap.getContext().remove(focusObject);
                 gameMap = MapLoader.getMap(details.map);
+                gameMap.getContext().add(focusObject);
                 SpriteUtils.setX(focusObject, details.coordinate.getInteger(0));
                 SpriteUtils.setY(focusObject, details.coordinate.getInteger(1));
                 focusCamera(focusObject);
