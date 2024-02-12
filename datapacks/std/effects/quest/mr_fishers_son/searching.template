@@ -1,0 +1,29 @@
+{
+  "metadata": {
+
+  },
+  "name": "Searching for Mr. Fisher's Son",
+  "description": "",
+  "tags": [
+    "quest/mr_fishers_son/searching"
+  ],
+  "subevent_filters": {
+    "get_object_tags": [
+      {
+        "conditions": [
+          {
+            "condition": "objects_match",
+            "subevent": "target",
+            "effect": "target"
+          }
+        ],
+        "functions": [
+          {
+            "function": "add_object_tag",
+            "tag": "quest/mr_fishers_son/searching"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "metadata": {
+
+  },
+  "name": "Billy the Kid's Dialog Tree",
+  "description": "",
+  "subevent_filters": {
+    "get_dialog": [
+      {
+        "conditions": [
+          {
+            "condition": "objects_match",
+            "subevent": "target",
+            "effect": "target"
+          },
+          {
+            "condition": "object_has_tag",
+            "object": {
+              "from": "subevent",
+              "object": "source"
+            },
+            "tag": "quest/mr_fishers_son/searching"
+          }
+        ],
+        "functions": [
+          {
+            "function": "add_dialog",
+            "dialog": [
+              "Hey, I'm hiding here! Find your own spot!",
+              "Oh, what's that? My dad is looking for me?",
+              "Ah, alright, tell him I'm fine... but I'm gonna keep playing!"
+            ]
+          },
+          {
+            "function": "invoke_subevent",
+            "subevent": {
+              "subevent": "remove_effect",
+              "effect_tags": [
+                "quest/mr_fishers_son/searching"
+              ]
+            },
+            "source": {
+              "from": "subevent",
+              "object": "target"
+            },
+            "targets": [
+              {
+                "from": "subevent",
+                "object": "source"
+              }
+            ]
+          },
+          {
+            "function": "invoke_subevent",
+            "subevent": {
+              "subevent": "give_effect",
+              "effect": "std:quest/mr_fishers_son/found"
+            },
+            "source": {
+              "from": "subevent",
+              "object": "target"
+            },
+            "targets": [
+              {
+                "from": "subevent",
+                "object": "source"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "condition": "objects_match",
+            "subevent": "target",
+            "effect": "target"
+          }
+        ],
+        "functions": [
+          {
+            "function": "add_dialog",
+            "dialog": [
+              "Hey, I'm hiding here! Find your own spot!"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

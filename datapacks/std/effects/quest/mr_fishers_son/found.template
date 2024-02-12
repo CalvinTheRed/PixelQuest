@@ -2,10 +2,13 @@
   "metadata": {
 
   },
-  "name": "Billy the Kid's Dialog Tree",
+  "name": "Found Mr. Fisher's Son",
   "description": "",
+  "tags": [
+    "quest/mr_fishers_son/found"
+  ],
   "subevent_filters": {
-    "get_dialog": [
+    "get_object_tags": [
       {
         "conditions": [
           {
@@ -16,10 +19,8 @@
         ],
         "functions": [
           {
-            "function": "add_dialog",
-            "dialog": [
-              "Hey, I'm hiding here! Find your own spot!"
-            ]
+            "function": "add_object_tag",
+            "tag": "quest/mr_fishers_son/found"
           }
         ]
       }

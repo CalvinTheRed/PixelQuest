@@ -1,0 +1,201 @@
+{
+  "metadata": {
+
+  },
+  "name": "Mr. Fisher's Dialog Tree",
+  "description": "",
+  "subevent_filters": {
+    "get_dialog": [
+      {
+        "conditions": [
+          {
+            "condition": "objects_match",
+            "subevent": "target",
+            "effect": "target"
+          },
+          {
+            "condition": "invert",
+            "invert": {
+              "condition": "object_has_tag",
+              "object": {
+                "from": "subevent",
+                "object": "source"
+              },
+              "tag": "quest/mr_fishers_son/searching"
+            }
+          },
+          {
+            "condition": "invert",
+            "invert": {
+              "condition": "object_has_tag",
+              "object": {
+                "from": "subevent",
+                "object": "source"
+              },
+              "tag": "quest/mr_fishers_son/found"
+            }
+          },
+          {
+            "condition": "invert",
+            "invert": {
+              "condition": "object_has_tag",
+              "object": {
+                "from": "subevent",
+                "object": "source"
+              },
+              "tag": "quest/mr_fishers_son/completed"
+            }
+          }
+        ],
+        "functions": [
+          {
+            "function": "add_dialog",
+            "dialog": [
+              "Hey neighbor! Say, could you help me find my son? He ran off not too long ago, and now I can't find him."
+            ]
+          },
+          {
+            "function": "invoke_subevent",
+            "subevent": {
+              "subevent": "give_effect",
+              "effect": "std:quest/mr_fishers_son/searching"
+            },
+            "source": {
+              "from": "subevent",
+              "object": "target"
+            },
+            "targets": [
+              {
+                "from": "subevent",
+                "object": "source"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "condition": "objects_match",
+            "subevent": "target",
+            "effect": "target"
+          },
+          {
+            "condition": "object_has_tag",
+            "object": {
+              "from": "subevent",
+              "object": "source"
+            },
+            "tag": "quest/mr_fishers_son/searching"
+          }
+        ],
+        "functions": [
+          {
+            "function": "add_dialog",
+            "dialog": [
+              "Hey there! Have you found my son yet? No? Ah, I'm sure he's around somewhere..."
+            ]
+          }
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "condition": "objects_match",
+            "subevent": "target",
+            "effect": "target"
+          },
+          {
+            "condition": "object_has_tag",
+            "object": {
+              "from": "subevent",
+              "object": "source"
+            },
+            "tag": "quest/mr_fishers_son/found"
+          },
+          {
+            "condition": "invert",
+            "invert": {
+              "condition": "object_has_tag",
+              "object": {
+                "from": "subevent",
+                "object": "source"
+              },
+              "tag": "quest/mr_fishers_son/completed"
+            }
+          }
+        ],
+        "functions": [
+          {
+            "function": "add_dialog",
+            "dialog": [
+              "Oh, thank goodness Billy's safe and sound!",
+              "He can keep playing, that's fine. Thanks a bundle, neighbor!"
+            ]
+          },
+          {
+            "function": "invoke_subevent",
+            "subevent": {
+              "subevent": "remove_effect",
+              "effect_tags": [
+                "quest/mr_fishers_son/found"
+              ]
+            },
+            "source": {
+              "from": "subevent",
+              "object": "target"
+            },
+            "targets": [
+              {
+                "from": "subevent",
+                "object": "source"
+              }
+            ]
+          },
+          {
+            "function": "invoke_subevent",
+            "subevent": {
+              "subevent": "give_effect",
+              "effect": "std:quest/mr_fishers_son/completed"
+            },
+            "source": {
+              "from": "subevent",
+              "object": "target"
+            },
+            "targets": [
+              {
+                "from": "subevent",
+                "object": "source"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "conditions": [
+          {
+            "condition": "objects_match",
+            "subevent": "target",
+            "effect": "target"
+          },
+          {
+            "condition": "object_has_tag",
+            "object": {
+              "from": "subevent",
+              "object": "source"
+            },
+            "tag": "quest/mr_fishers_son/completed"
+          }
+        ],
+        "functions": [
+          {
+            "function": "add_dialog",
+            "dialog": [
+              "Hey neighbor! How 'bout that weather?"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

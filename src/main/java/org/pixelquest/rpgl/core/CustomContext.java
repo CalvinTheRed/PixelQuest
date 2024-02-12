@@ -15,4 +15,5 @@ public class CustomContext extends RPGLContext {
     public void viewCompletedSubevent(Subevent subevent) {
         super.viewCompletedSubevent(subevent);
     }
+
 }

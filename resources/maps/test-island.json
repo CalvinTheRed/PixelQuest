@@ -48,7 +48,10 @@
       "id": "std:humanoid/commoner",
       "name": "Mr. Fisher",
       "pos": [ 43, 26 ],
-      "rot": 0
+      "rot": 0,
+      "effects": [
+        "std:dialog/test_island/mr_fisher"
+      ]
     },
     {
       "id": "std:humanoid/commoner",
@@ -57,10 +60,13 @@
       "rot": 1
     },
     {
-      "id": "std:test_island/billy_the_kid",
+      "id": "std:humanoid/commoner",
       "name": "Billy the Kid",
       "pos": [ 16, 9 ],
-      "rot": 0
+      "rot": 0,
+      "effects": [
+        "std:dialog/test_island/billy_the_kid"
+      ]
     }
   ],
   "warp_zones": [

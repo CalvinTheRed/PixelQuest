@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.pixelquest.rpgl.core.CustomContext;
 import org.pixelquest.util.SpriteUtils;
 import org.rpgl.core.RPGLContext;
+import org.rpgl.core.RPGLFactory;
 import org.rpgl.core.RPGLObject;
 import org.rpgl.json.JsonArray;
 import org.rpgl.json.JsonObject;
@@ -42,6 +43,14 @@ public final class MapLoader {
                     pos.getInteger(1),
                     objectData.getInteger("rot")
             );
+            JsonArray effects = objectData.getJsonArray("effects");
+            if (effects != null) {
+                for (int j = 0; j < effects.size(); j++) {
+                    newObject.addEffect(RPGLFactory.newEffect(effects.getString(j))
+                            .setSource(newObject)
+                            .setTarget(newObject));
+                }
+            }
             newObject.setName(objectData.getString("name"));
             context.add(newObject);
         }
