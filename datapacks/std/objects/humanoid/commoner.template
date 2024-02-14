@@ -13,8 +13,8 @@
     "cha": 10
   },
   "health_data": {
-    "base": 2,
-    "current": 2,
+    "base": 10,
+    "current": 7,
     "temporary": 0
   },
   "proficiency_bonus": 2,
