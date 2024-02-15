@@ -1,4 +1,4 @@
-package org.pixelquest.rpgl.subevents;
+package org.pixelquest.rpgl.subevent;
 
 import org.rpgl.core.RPGLContext;
 import org.rpgl.core.RPGLObject;

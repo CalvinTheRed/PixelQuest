@@ -1,7 +1,8 @@
 package org.pixelquest.main;
 
-import org.pixelquest.rpgl.functions.AddDialog;
-import org.pixelquest.rpgl.subevents.GetDialog;
+import org.pixelquest.rpgl.function.AddDialog;
+import org.pixelquest.rpgl.subevent.GetDialog;
+import org.pixelquest.ui.GamePanel;
 import org.rpgl.core.RPGLCore;
 import org.rpgl.datapack.DatapackLoader;
 import org.rpgl.function.Function;
@@ -9,7 +10,6 @@ import org.rpgl.subevent.Subevent;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
 
 public class Main {
 
@@ -34,7 +34,7 @@ public class Main {
         GamePanel gamePanel;
         try {
             gamePanel = new GamePanel("resources/maps/test-island.json");
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }

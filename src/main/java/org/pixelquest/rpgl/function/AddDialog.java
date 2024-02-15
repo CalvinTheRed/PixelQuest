@@ -1,6 +1,6 @@
-package org.pixelquest.rpgl.functions;
+package org.pixelquest.rpgl.function;
 
-import org.pixelquest.rpgl.subevents.GetDialog;
+import org.pixelquest.rpgl.subevent.GetDialog;
 import org.rpgl.core.RPGLContext;
 import org.rpgl.core.RPGLEffect;
 import org.rpgl.function.Function;

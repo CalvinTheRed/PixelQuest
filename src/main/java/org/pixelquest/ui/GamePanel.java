@@ -1,11 +1,10 @@
-package org.pixelquest.main;
+package org.pixelquest.ui;
 
 import org.pixelquest.core.GameMap;
 import org.pixelquest.core.MapLoader;
 import org.pixelquest.input.ContinuousKeyHandler;
 import org.pixelquest.input.DiscreteKeyHandler;
-import org.pixelquest.rpgl.subevents.GetDialog;
-import org.pixelquest.util.ImageUtils;
+import org.pixelquest.rpgl.subevent.GetDialog;
 import org.pixelquest.util.SpriteUtils;
 import org.rpgl.core.RPGLObject;
 import org.rpgl.json.JsonArray;
@@ -43,9 +42,10 @@ public class GamePanel extends JPanel implements Runnable {
     private Integer keyBeingHandled;
     private JsonArray currentDialog = null;
 
-    RPGLObject focusObject = SpriteUtils.newObject("std:humanoid/commoner", 25, 18, SpriteUtils.FACING_DOWN);
+    private RPGLObject focusObject = SpriteUtils.newObject("std:humanoid/commoner", 25, 18, SpriteUtils.FACING_DOWN);
+    private final HealthBar healthBar;
 
-    public GamePanel(String initialMap) throws IOException {
+    public GamePanel(String initialMap) throws Exception {
         gameMap = MapLoader.getMap(initialMap);
         spriteOffsetY = -TILE_SIZE * SCALE / 4;
 
@@ -61,6 +61,11 @@ public class GamePanel extends JPanel implements Runnable {
 
         focusCamera(focusObject);
         gameMap.getContext().add(focusObject);
+
+        healthBar = new HealthBar(
+                focusObject.getHealthData().getInteger("current"),
+                focusObject.getMaximumHitPoints(gameMap.getContext())
+        );
     }
 
     @Override
@@ -88,7 +93,7 @@ public class GamePanel extends JPanel implements Runnable {
             renderDetailLayer(g2);
             renderObjectLayer(g2);
             renderForegroundLayer(g2);
-            renderHudLayer(g2);
+            renderPanels(g2);
             renderDialog(g2);
         } catch (IOException e) {
             g2.dispose();
@@ -156,74 +161,8 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    private void renderHudLayer(Graphics2D g2) throws IOException {
-        renderHealthBarWithArmorClass(g2);
-    }
-
-    private void renderHealthBarWithArmorClass(Graphics2D g2) throws IOException {
-        BufferedImage healthBar = ImageIO.read(new File("resources/textures/hud/healthbar-left.png"));
-        BufferedImage healthBlockGray = ImageIO.read(new File("resources/textures/hud/healthbar-block-gray.png"));
-        BufferedImage healthBlockRed = ImageIO.read(new File("resources/textures/hud/healthbar-block-red.png"));
-        BufferedImage heathBarRight = ImageIO.read(new File("resources/textures/hud/healthbar-right.png"));
-
-        final int healthBarBlocks = 10;
-        int currentHealth = focusObject.getHealthData().getInteger("current");
-        int maxHealth = currentHealth;
-        try {
-            maxHealth = focusObject.getMaximumHitPoints(gameMap.getContext());
-        } catch (Exception e) {
-            System.out.println("Couldn't calculate focus object's maximum hit points, using current instead!");
-        }
-        int healthBlocksFilled = currentHealth * healthBarBlocks / maxHealth;
-
-        for (int i = 1; i <= healthBlocksFilled; i++) {
-            if (i == 1) {
-                healthBar = ImageUtils.joinImageHorz(
-                        healthBar,
-                        0,
-                        0,
-                        healthBar.getWidth(),
-                        healthBar.getHeight(),
-                        healthBlockRed,
-                        0,
-                        0,
-                        healthBlockRed.getWidth() / 3,
-                        healthBlockRed.getHeight()
-                );
-            } else if (i < healthBlocksFilled) {
-                healthBar = ImageUtils.joinImageHorz(
-                        healthBar,
-                        0,
-                        0,
-                        healthBar.getWidth(),
-                        healthBar.getHeight(),
-                        healthBlockRed,
-                        healthBlockRed.getWidth() / 3,
-                        0,
-                        healthBlockRed.getWidth() * 2 / 3,
-                        healthBlockRed.getHeight()
-                );
-            } else {
-                healthBar = ImageUtils.joinImageHorz(
-                        healthBar,
-                        0,
-                        0,
-                        healthBar.getWidth(),
-                        healthBar.getHeight(),
-                        healthBlockRed,
-                        healthBlockRed.getWidth() * 2 / 3,
-                        0,
-                        healthBlockRed.getWidth(),
-                        healthBlockRed.getHeight()
-                );
-            }
-
-        }
-        for (int i = healthBlocksFilled; i < healthBarBlocks; i++) {
-            healthBar = ImageUtils.joinImageHorz(healthBar, healthBlockGray);
-        }
-        healthBar = ImageUtils.joinImageHorz(healthBar, heathBarRight);
-        g2.drawImage(healthBar, 10, 10, healthBar.getWidth() * 2, healthBar.getHeight() * 2, null);
+    private void renderPanels(Graphics2D g2) throws IOException {
+        this.healthBar.paintMe(g2);
     }
 
     private void renderDialog(Graphics2D g2) {
