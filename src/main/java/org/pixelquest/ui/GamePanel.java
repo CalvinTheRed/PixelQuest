@@ -65,7 +65,7 @@ public class GamePanel extends JPanel implements Runnable {
         healthBar = new HealthBar(
                 focusObject.getHealthData().getInteger("current"),
                 focusObject.getMaximumHitPoints(gameMap.getContext()),
-                2
+                2d
         );
     }
 
@@ -94,7 +94,7 @@ public class GamePanel extends JPanel implements Runnable {
             renderDetailLayer(g2);
             renderObjectLayer(g2);
             renderForegroundLayer(g2);
-            renderPanels(g2);
+            renderHudComponents(g2);
             renderDialog(g2);
         } catch (IOException e) {
             g2.dispose();
@@ -162,8 +162,9 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    private void renderPanels(Graphics2D g2) throws IOException {
-        this.healthBar.paintMe(g2);
+    private void renderHudComponents(Graphics2D g2) throws IOException {
+        this.healthBar.paintMe(g2, this);
+        new ToolBar(1d).paintMe(g2, this);
     }
 
     private void renderDialog(Graphics2D g2) {

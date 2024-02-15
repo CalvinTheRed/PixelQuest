@@ -7,28 +7,26 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class HealthBar extends JPanel {
+public class HealthBar extends HudComponent {
 
     private final BufferedImage healthBarLeft;
     private final BufferedImage healthBlockEmpty;
     private final BufferedImage healthBlockFilled;
     private final BufferedImage healthBarRight;
-    private final int margin = 10;
     private final int cells = 10;
-    private final int scale;
 
     private int current;
     private int max;
 
-    public HealthBar(int current, int max, int scale) throws IOException {
+    public HealthBar(int current, int max, double scale) throws IOException {
+        super(scale, 10);
         this.current = current;
         this.max = max;
-        this.scale = scale;
 
-        healthBarLeft = ImageIO.read(new File("resources/textures/hud/healthbar-left.png"));
-        healthBlockEmpty = ImageIO.read(new File("resources/textures/hud/healthbar-block-empty.png"));
-        healthBlockFilled = ImageIO.read(new File("resources/textures/hud/healthbar-block-filled.png"));
-        healthBarRight = ImageIO.read(new File("resources/textures/hud/healthbar-right.png"));
+        this.healthBarLeft = ImageIO.read(new File("resources/textures/hud/healthbar-left.png"));
+        this.healthBlockEmpty = ImageIO.read(new File("resources/textures/hud/healthbar-block-empty.png"));
+        this.healthBlockFilled = ImageIO.read(new File("resources/textures/hud/healthbar-block-filled.png"));
+        this.healthBarRight = ImageIO.read(new File("resources/textures/hud/healthbar-right.png"));
     }
 
     public void setCurrentHealth(int current) {
@@ -39,7 +37,8 @@ public class HealthBar extends JPanel {
         this.max = max;
     }
 
-    public void paintMe(Graphics2D g2) {
+    @Override
+    public void paintMe(Graphics2D g2, JPanel canvas) {
         this.paintHealthBarLeft(g2);
         int healthBlocksFilled = this.current * this.cells / this.max;
         if (healthBlocksFilled == 0 && this.current > 0) {
@@ -55,8 +54,8 @@ public class HealthBar extends JPanel {
         g2.drawImage(this.healthBarLeft,
                 this.margin,
                 this.margin,
-                this.healthBarLeft.getWidth() * this.scale,
-                this.healthBarLeft.getHeight() * this.scale,
+                (int) (this.healthBarLeft.getWidth() * this.scale),
+                (int) (this.healthBarLeft.getHeight() * this.scale),
                 null
         );
     }
@@ -66,10 +65,10 @@ public class HealthBar extends JPanel {
             if (index == 0) {
                 // first
                 g2.drawImage(this.healthBlockFilled,
-                        this.margin + (this.scale * this.healthBarLeft.getWidth()),
+                        (int) (this.margin + (this.scale * this.healthBarLeft.getWidth())),
                         this.margin,
-                        this.margin + (this.scale * (this.healthBarLeft.getWidth() + this.healthBlockEmpty.getWidth())),
-                        this.margin + (this.scale * this.healthBlockFilled.getHeight()),
+                        (int) (this.margin + (this.scale * (this.healthBarLeft.getWidth() + this.healthBlockEmpty.getWidth()))),
+                        (int) (this.margin + (this.scale * this.healthBlockFilled.getHeight())),
                         0,
                         0,
                         this.healthBlockFilled.getWidth() / 3,
@@ -79,10 +78,10 @@ public class HealthBar extends JPanel {
             } else if (index == this.cells - 1) {
                 // last
                 g2.drawImage(this.healthBlockFilled,
-                        this.margin + (this.scale * (this.healthBarLeft.getWidth() + (index * this.healthBlockFilled.getWidth() / 3))),
+                        (int) (this.margin + (this.scale * (this.healthBarLeft.getWidth() + (index * this.healthBlockFilled.getWidth() / 3)))),
                         this.margin,
-                        this.margin + (this.scale * (this.healthBarLeft.getWidth() + ((index + 1) * this.healthBlockFilled.getWidth() / 3))),
-                        this.margin + (this.scale * this.healthBlockFilled.getHeight()),
+                        (int) (this.margin + (this.scale * (this.healthBarLeft.getWidth() + ((index + 1) * this.healthBlockFilled.getWidth() / 3)))),
+                        (int) (this.margin + (this.scale * this.healthBlockFilled.getHeight())),
                         this.healthBlockFilled.getWidth() * 2 / 3,
                         0,
                         this.healthBlockFilled.getWidth(),
@@ -92,10 +91,10 @@ public class HealthBar extends JPanel {
             } else {
                 // middle
                 g2.drawImage(this.healthBlockFilled,
-                        this.margin + (this.scale * (this.healthBarLeft.getWidth() + (index * this.healthBlockFilled.getWidth() / 3))),
+                        (int) (this.margin + (this.scale * (this.healthBarLeft.getWidth() + (index * this.healthBlockFilled.getWidth() / 3)))),
                         this.margin,
-                        this.margin + (this.scale * (this.healthBarLeft.getWidth() + ((index + 1) * this.healthBlockFilled.getWidth() / 3))),
-                        this.margin + (this.scale * this.healthBlockFilled.getHeight()),
+                        (int) (this.margin + (this.scale * (this.healthBarLeft.getWidth() + ((index + 1) * this.healthBlockFilled.getWidth() / 3)))),
+                        (int) (this.margin + (this.scale * this.healthBlockFilled.getHeight())),
                         this.healthBlockFilled.getWidth() / 3,
                         0,
                         this.healthBlockFilled.getWidth() * 2 / 3,
@@ -106,10 +105,10 @@ public class HealthBar extends JPanel {
         } else {
             // empty
             g2.drawImage(this.healthBlockEmpty,
-                    this.margin + this.scale * (this.healthBarLeft.getWidth() + (index * this.healthBlockEmpty.getWidth())),
+                    (int) (this.margin + this.scale * (this.healthBarLeft.getWidth() + (index * this.healthBlockEmpty.getWidth()))),
                     this.margin,
-                    this.scale * this.healthBlockEmpty.getWidth(),
-                    this.scale * this.healthBlockEmpty.getHeight(),
+                    (int) (this.scale * this.healthBlockEmpty.getWidth()),
+                    (int) (this.scale * this.healthBlockEmpty.getHeight()),
                     null
             );
         }
@@ -117,10 +116,10 @@ public class HealthBar extends JPanel {
 
     private void paintHealthBarRight(Graphics2D g2) {
         g2.drawImage(this.healthBarRight,
-                this.margin + this.scale * (this.healthBarLeft.getWidth() + this.cells * this.healthBlockEmpty.getWidth()),
+                (int) (this.margin + this.scale * (this.healthBarLeft.getWidth() + this.cells * this.healthBlockEmpty.getWidth())),
                 this.margin,
-                this.scale * this.healthBarRight.getWidth(),
-                this.scale * this.healthBarLeft.getHeight(),
+                (int) (this.scale * this.healthBarRight.getWidth()),
+                (int) (this.scale * this.healthBarLeft.getHeight()),
                 null
         );
     }
