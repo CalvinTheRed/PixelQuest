@@ -64,7 +64,8 @@ public class GamePanel extends JPanel implements Runnable {
 
         healthBar = new HealthBar(
                 focusObject.getHealthData().getInteger("current"),
-                focusObject.getMaximumHitPoints(gameMap.getContext())
+                focusObject.getMaximumHitPoints(gameMap.getContext()),
+                2
         );
     }
 
